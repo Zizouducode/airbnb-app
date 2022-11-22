@@ -51,7 +51,11 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
         {userToken === null ? (
           // No token found, user isn't signed in
           <>
