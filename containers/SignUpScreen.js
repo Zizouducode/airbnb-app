@@ -1,18 +1,18 @@
 import { useNavigation } from "@react-navigation/core";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import {
   Button,
   Text,
-  TextInput,
   View,
   TouchableOpacity,
   StyleSheet,
   Image,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
+import { TextInput } from "react-native-paper";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignInScreen({ setToken }) {
   const navigation = useNavigation();
@@ -23,10 +23,10 @@ export default function SignInScreen({ setToken }) {
   const [passwordConfirmation, setpasswordConfirmation] = useState("");
   const [description, setDescription] = useState("");
   const [username, setUsername] = useState("");
-  const [isSamePassword, setIsSamePassword] = useState(true);
-
+  const [activityIndicator, setActivityIndicator] = useState(false);
   const [needToBeFilled, setNeedToBeFilled] = useState(false);
-  const [samePassword, setSamePassword] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(true);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(true);
 
   //Functions
   const handleEmailChange = (text) => {
@@ -36,14 +36,7 @@ export default function SignInScreen({ setToken }) {
     setPassword(text);
   };
 
-  useEffect(() => {
-    if (password === passwordConfirmation) {
-      setIsSamePassword(true);
-    }
-  }, [passwordConfirmation]);
-
   const handlePasswordConfirmationChange = (text) => {
-    setIsSamePassword(false);
     setpasswordConfirmation(text);
   };
 
@@ -57,6 +50,7 @@ export default function SignInScreen({ setToken }) {
   const handleSignUp = async () => {
     // const userToken = "secret-token";
     // setToken(userToken);
+    setActivityIndicator(true);
     if (
       !email ||
       !username ||
@@ -79,9 +73,12 @@ export default function SignInScreen({ setToken }) {
             }
           );
           console.log(response.data);
+          setActivityIndicator(false);
+          alert("You are registered");
         }
       } catch (error) {
-        alert("This email is already used");
+        setActivityIndicator(false);
+        alert("This email or username is already used");
         console.log(error.message);
       }
     }
@@ -90,85 +87,135 @@ export default function SignInScreen({ setToken }) {
   // console.log("email=>", email);
   // console.log("username=>", username);
   // console.log("description=>", description);
-  console.log("password=>", password);
-  console.log("passwordConfirmation=>", passwordConfirmation);
+  // console.log("password=>", password);
+  // console.log("passwordConfirmation=>", passwordConfirmation);
+  console.log("passwordVisible=>", passwordVisible);
+  console.log("confirmPasswordVisible=>", confirmPasswordVisible);
 
   return (
     <View style={styles.container}>
-      <KeyboardAwareScrollView>
-        <View style={styles.logoTitleContainer}>
-          <Image style={styles.logo} source={require("../assets/logo.png")} />
-          <Text style={styles.title}>Sign up</Text>
+      {activityIndicator ? (
+        <View
+          style={[
+            styles.activityIndicatorContainer,
+            styles.activityIndicatorHorizontal,
+          ]}
+        >
+          <ActivityIndicator size="large" color="#FFBAC0" />
         </View>
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="email"
-            onChangeText={(text) => {
-              handleEmailChange(text);
-            }}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="username"
-            onChangeText={(text) => {
-              handleUsernameChange(text);
-            }}
-          />
-
-          <TextInput
-            style={styles.inputDescription}
-            placeholder="Describe yoursel in a few words"
-            multiline={true}
-            numberOfLines={8}
-            onChangeText={(text) => {
-              handleDescriptionChange(text);
-            }}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="password"
-            secureTextEntry={true}
-            onChangeText={(text) => {
-              handlePasswordChange(text);
-            }}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="password"
-            secureTextEntry={true}
-            onChangeText={(text) => {
-              handlePasswordConfirmationChange(text);
-            }}
-          />
-        </View>
-
-        <View style={styles.buttonsContainer}>
-          {needToBeFilled ? (
-            <Text style={styles.errorMessage}>Please fill all fields</Text>
-          ) : null}
-          {!isSamePassword ? (
-            <Text style={styles.errorMessage}>Passwords must be the same</Text>
-          ) : null}
-          <View style={styles.signInBtnContainer}>
-            <TouchableOpacity title="Sign in" onPress={handleSignUp}>
-              <Text style={styles.signIn}>Sign up</Text>
-            </TouchableOpacity>
+      ) : (
+        <KeyboardAwareScrollView>
+          <View style={styles.logoTitleContainer}>
+            <Image style={styles.logo} source={require("../assets/logo.png")} />
+            <Text style={styles.title}>Sign up</Text>
           </View>
-          <View style={styles.registerContainer}>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("SignIn");
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="email"
+              activeUnderlineColor="#FFBAC0"
+              underlineColor="#FFBAC0"
+              onChangeText={(text) => {
+                handleEmailChange(text);
               }}
-            >
-              <Text style={styles.registerText}>
-                Already have an account ? Sign In
-              </Text>
-            </TouchableOpacity>
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="username"
+              activeUnderlineColor="#FFBAC0"
+              underlineColor="#FFBAC0"
+              onChangeText={(text) => {
+                handleUsernameChange(text);
+              }}
+            />
+
+            <TextInput
+              style={styles.inputDescription}
+              placeholder="Describe yourself in a few words"
+              multiline={true}
+              numberOfLines={8}
+              activeUnderlineColor="#FFBAC0"
+              underlineColor="00FFFFFF"
+              onChangeText={(text) => {
+                handleDescriptionChange(text);
+              }}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="password"
+              secureTextEntry={passwordVisible}
+              activeUnderlineColor="#FFBAC0"
+              underlineColor="#FFBAC0"
+              backgroundColor="white"
+              right={
+                <TextInput.Icon
+                  color="#FFBAC0"
+                  backgroundColor="white"
+                  name={passwordVisible ? "eye" : "eye-off"}
+                  onPress={() => setPasswordVisible(!passwordVisible)}
+                />
+              }
+              onChangeText={(text) => {
+                handlePasswordChange(text);
+              }}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="confirm your password"
+              secureTextEntry={confirmPasswordVisible}
+              activeUnderlineColor="#FFBAC0"
+              underlineColor="#FFBAC0"
+              right={
+                <TextInput.Icon
+                  style={styles.textInputIcon}
+                  color="#FFBAC0"
+                  backgroundColor="white"
+                  name={confirmPasswordVisible ? "eye" : "eye-off"}
+                  onPress={() =>
+                    setConfirmPasswordVisible(!confirmPasswordVisible)
+                  }
+                />
+              }
+              onChangeText={(text) => {
+                handlePasswordConfirmationChange(text);
+              }}
+            />
           </View>
-        </View>
-      </KeyboardAwareScrollView>
+
+          <View style={styles.buttonsContainer}>
+            {needToBeFilled ? (
+              <Text style={styles.errorMessage}>Please fill all fields</Text>
+            ) : null}
+            {passwordConfirmation && password !== passwordConfirmation && (
+              <Text style={styles.errorMessage}>
+                Passwords must be the same
+              </Text>
+            )}
+            {/* {!isSamePassword ? (
+              <Text style={styles.errorMessage}>
+                Passwords must be the same
+              </Text>
+            ) : null} */}
+            <View style={styles.signInBtnContainer}>
+              <TouchableOpacity title="Sign in" onPress={handleSignUp}>
+                <Text style={styles.signIn}>Sign up</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.registerContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("SignIn");
+                }}
+              >
+                <Text style={styles.registerText}>
+                  Already have an account ? Sign In
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAwareScrollView>
+      )}
     </View>
   );
 }
@@ -203,10 +250,11 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50,
-    borderBottomColor: "#FFBAC0",
-    borderBottomWidth: 1,
+    // borderBottomColor: "#FFBAC0",
+    // borderBottomWidth: 1,
+
     marginVertical: 10,
-    // backgroundColor: "red",
+    backgroundColor: "white",
   },
 
   inputDescription: {
@@ -215,6 +263,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     marginVertical: 10,
+    backgroundColor: "white",
   },
   buttonsContainer: {
     justifyContent: "center",
@@ -250,5 +299,14 @@ const styles = StyleSheet.create({
   registerText: {
     color: "#717171",
     fontWeight: "500",
+  },
+  activityIndicatorContainer: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  activityIndicatorHorizontal: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10,
   },
 });

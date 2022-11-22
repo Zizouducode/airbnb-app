@@ -4,15 +4,15 @@ import axios from "axios";
 import {
   Button,
   Text,
-  TextInput,
   View,
   TouchableOpacity,
   StyleSheet,
   Image,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
+import { TextInput } from "react-native-paper";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignInScreen({ setToken }) {
   const navigation = useNavigation();
@@ -21,6 +21,8 @@ export default function SignInScreen({ setToken }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [needToBeFilled, setNeedToBeFilled] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(true);
+  const [activityIndicator, setActivityIndicator] = useState(false);
 
   //Functions
   const handleEmailChange = (text) => {
@@ -33,6 +35,7 @@ export default function SignInScreen({ setToken }) {
   const handleSignIn = async () => {
     // const userToken = "secret-token";
     // setToken(userToken);
+    setActivityIndicator(true);
     if (!email || !password) {
       setNeedToBeFilled(true);
     } else {
@@ -45,8 +48,10 @@ export default function SignInScreen({ setToken }) {
             password: password,
           }
         );
+        setActivityIndicator(false);
         console.log(response.data);
       } catch (error) {
+        setActivityIndicator(false);
         alert("Invalid credentials");
         console.log(error.message);
       }
@@ -57,50 +62,73 @@ export default function SignInScreen({ setToken }) {
   // console.log("password=>", password);
   return (
     <View style={styles.container}>
-      <KeyboardAwareScrollView>
-        <View style={styles.logoTitleContainer}>
-          <Image style={styles.logo} source={require("../assets/logo.png")} />
-          <Text style={styles.title}>Sign in</Text>
+      {activityIndicator ? (
+        <View
+          style={[
+            styles.activityIndicatorContainer,
+            styles.activityIndicatorHorizontal,
+          ]}
+        >
+          <ActivityIndicator size="large" color="#FFBAC0" />
         </View>
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="email"
-            onChangeText={(text) => {
-              handleEmailChange(text);
-            }}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="password"
-            secureTextEntry={true}
-            onChangeText={(text) => {
-              handlePasswordChange(text);
-            }}
-          />
-        </View>
-
-        <View style={styles.buttonsContainer}>
-          {needToBeFilled ? (
-            <Text style={styles.errorMessage}>Please fill all fields</Text>
-          ) : null}
-          <View style={styles.signInBtnContainer}>
-            <TouchableOpacity title="Sign in" onPress={handleSignIn}>
-              <Text style={styles.signIn}>Sign in</Text>
-            </TouchableOpacity>
+      ) : (
+        <KeyboardAwareScrollView>
+          <View style={styles.logoTitleContainer}>
+            <Image style={styles.logo} source={require("../assets/logo.png")} />
+            <Text style={styles.title}>Sign in</Text>
           </View>
-          <View style={styles.registerContainer}>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("SignUp");
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              activeUnderlineColor="#FFBAC0"
+              underlineColor="#FFBAC0"
+              placeholder="email"
+              onChangeText={(text) => {
+                handleEmailChange(text);
               }}
-            >
-              <Text style={styles.registerText}>No account ? Register</Text>
-            </TouchableOpacity>
+            />
+            <TextInput
+              style={styles.input}
+              activeUnderlineColor="#FFBAC0"
+              underlineColor="#FFBAC0"
+              placeholder="password"
+              secureTextEntry={passwordVisible}
+              right={
+                <TextInput.Icon
+                  color="#FFBAC0"
+                  backgroundColor="white"
+                  name={passwordVisible ? "eye" : "eye-off"}
+                  onPress={() => setPasswordVisible(!passwordVisible)}
+                />
+              }
+              onChangeText={(text) => {
+                handlePasswordChange(text);
+              }}
+            />
           </View>
-        </View>
-      </KeyboardAwareScrollView>
+
+          <View style={styles.buttonsContainer}>
+            {needToBeFilled ? (
+              <Text style={styles.errorMessage}>Please fill all fields</Text>
+            ) : null}
+            <View style={styles.signInBtnContainer}>
+              <TouchableOpacity title="Sign in" onPress={handleSignIn}>
+                <Text style={styles.signIn}>Sign in</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.registerContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("SignUp");
+                }}
+              >
+                <Text style={styles.registerText}>No account ? Register</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAwareScrollView>
+      )}
     </View>
   );
 }
@@ -136,9 +164,10 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50,
-    borderBottomColor: "#FFBAC0",
-    borderBottomWidth: 1,
-    // backgroundColor: "red",
+    // borderBottomColor: "#FFBAC0",
+    // borderBottomWidth: 1,
+
+    backgroundColor: "white",
   },
   buttonsContainer: {
     justifyContent: "center",
@@ -174,5 +203,14 @@ const styles = StyleSheet.create({
   registerText: {
     color: "#717171",
     fontWeight: "500",
+  },
+  activityIndicatorContainer: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  activityIndicatorHorizontal: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10,
   },
 });
