@@ -48,8 +48,8 @@ export default function SignInScreen({ setToken }) {
   };
 
   const handleSignUp = async () => {
-    // const userToken = "secret-token";
-    // setToken(userToken);
+    const userToken = "secret-token";
+    setToken(userToken);
     setActivityIndicator(true);
     if (
       !email ||
