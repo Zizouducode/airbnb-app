@@ -12,6 +12,7 @@ import {
   Dimensions,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignInScreen({ setToken }) {
   const navigation = useNavigation();
@@ -44,7 +45,6 @@ export default function SignInScreen({ setToken }) {
             password: password,
           }
         );
-
         console.log(response.data);
       } catch (error) {
         alert("Invalid credentials");
@@ -57,11 +57,12 @@ export default function SignInScreen({ setToken }) {
   // console.log("password=>", password);
   return (
     <View style={styles.container}>
-      <View style={styles.logoTitleContainer}>
-        <Image style={styles.logo} source={require("../assets/logo.png")} />
-        <Text style={styles.title}>Sign in</Text>
-      </View>
-      <KeyboardAwareScrollView style={styles.test}>
+      <KeyboardAwareScrollView>
+        <View style={styles.logoTitleContainer}>
+          <Image style={styles.logo} source={require("../assets/logo.png")} />
+          <Text style={styles.title}>Sign in</Text>
+        </View>
+
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
@@ -79,36 +80,32 @@ export default function SignInScreen({ setToken }) {
             }}
           />
         </View>
+
+        <View style={styles.buttonsContainer}>
+          {needToBeFilled ? (
+            <Text style={styles.errorMessage}>Please fill all fields</Text>
+          ) : null}
+          <View style={styles.signInBtnContainer}>
+            <TouchableOpacity title="Sign in" onPress={handleSignIn}>
+              <Text style={styles.signIn}>Sign in</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.registerContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("SignUp");
+              }}
+            >
+              <Text style={styles.registerText}>No account ? Register</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </KeyboardAwareScrollView>
-      <View style={styles.buttonsContainer}>
-        {needToBeFilled ? (
-          <Text style={styles.errorMessage}>Please fill all fields</Text>
-        ) : null}
-        <View style={styles.signInBtnContainer}>
-          <TouchableOpacity title="Sign in" onPress={handleSignIn}>
-            <Text style={styles.signIn}>Sign in</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.registerContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("SignUp");
-            }}
-          >
-            <Text style={styles.registerText}>No account ? Register</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  test: {
-    backgroundColor: "salmon",
-    height: 200,
-  },
-
   container: {
     backgroundColor: "white",
     flex: 1,
@@ -158,7 +155,7 @@ const styles = StyleSheet.create({
     width: 200,
     borderColor: "#EB5A62",
     borderWidth: 3,
-    borderRadius: "25",
+    borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 25,
