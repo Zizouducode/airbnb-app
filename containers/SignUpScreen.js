@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/core";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Button,
@@ -35,12 +35,16 @@ export default function SignInScreen({ setToken }) {
   const handlePasswordChange = (text) => {
     setPassword(text);
   };
-  const handlePasswordConfirmationChange = (text) => {
-    setIsSamePassword(false);
-    setpasswordConfirmation(text);
+
+  useEffect(() => {
     if (password === passwordConfirmation) {
       setIsSamePassword(true);
     }
+  }, [passwordConfirmation]);
+
+  const handlePasswordConfirmationChange = (text) => {
+    setIsSamePassword(false);
+    setpasswordConfirmation(text);
   };
 
   const handleUsernameChange = (text) => {
