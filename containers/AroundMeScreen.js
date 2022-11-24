@@ -1,4 +1,10 @@
-import { Text, View, StyleSheet, ActivityIndicator } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { useState, useEffect } from "react";
 import * as Location from "expo-location";
 
@@ -67,14 +73,22 @@ export default function AroundMeScreen() {
         >
           {data.map((marker) => {
             return (
-              <MapView.Marker
+              <TouchableOpacity
                 key={marker._id}
-                coordinate={{
-                  latitude: marker.location[1],
-                  longitude: marker.location[0],
+                onPress={() => {
+                  console.log("coucou");
+                  navigation.navigate("Room", { roomId: data._id });
                 }}
-                title={marker.title}
-              />
+              >
+                <MapView.Marker
+                  // key={marker._id}
+                  coordinate={{
+                    latitude: marker.location[1],
+                    longitude: marker.location[0],
+                  }}
+                  title={marker.title}
+                />
+              </TouchableOpacity>
             );
           })}
         </MapView>
