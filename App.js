@@ -4,12 +4,15 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from "react-native";
 import HomeScreen from "./containers/HomeScreen";
 import ProfileScreen from "./containers/ProfileScreen";
 import SignInScreen from "./containers/SignInScreen";
 import SignUpScreen from "./containers/SignUpScreen";
 import SettingsScreen from "./containers/SettingsScreen";
 import SplashScreen from "./containers/SplashScreen";
+import RoomScreen from "./containers/RoomScreen";
+import AroundMeScreen from "./containers/AroundMeScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -91,9 +94,15 @@ export default function App() {
                       <Stack.Screen
                         name="Home"
                         options={{
-                          title: "My App",
-                          headerStyle: { backgroundColor: "red" },
-                          headerTitleStyle: { color: "white" },
+                          headerTitle: () => (
+                            <Image
+                              style={{ width: 40, height: 40 }}
+                              source={require("./assets/logo.png")}
+                            />
+                          ),
+                          // title: "",
+                          // headerStyle: { backgroundColor: "red" },
+                          // headerTitleStyle: { color: "white" },
                         }}
                       >
                         {() => <HomeScreen />}
@@ -106,6 +115,52 @@ export default function App() {
                         }}
                       >
                         {() => <ProfileScreen />}
+                      </Stack.Screen>
+                      <Stack.Screen
+                        name="Room"
+                        options={{
+                          headerTitle: () => (
+                            <Image
+                              style={{ width: 40, height: 40 }}
+                              source={require("./assets/logo.png")}
+                            />
+                          ),
+                          //   title: "User Profile",
+                        }}
+                      >
+                        {() => <RoomScreen />}
+                      </Stack.Screen>
+                    </Stack.Navigator>
+                  )}
+                </Tab.Screen>
+                <Tab.Screen
+                  name="TabAroundMe"
+                  options={{
+                    tabBarLabel: "AroundMe",
+                    tabBarIcon: ({ color, size }) => (
+                      <Ionicons
+                        name={"location-outline"}
+                        size={size}
+                        color={color}
+                      />
+                    ),
+                  }}
+                >
+                  {() => (
+                    <Stack.Navigator>
+                      <Stack.Screen
+                        name="AroundMe"
+                        options={{
+                          headerTitle: () => (
+                            <Image
+                              style={{ width: 40, height: 40 }}
+                              source={require("./assets/logo.png")}
+                            />
+                          ),
+                          // title: "AroudMe",
+                        }}
+                      >
+                        {() => <AroundMeScreen setToken={setToken} />}
                       </Stack.Screen>
                     </Stack.Navigator>
                   )}

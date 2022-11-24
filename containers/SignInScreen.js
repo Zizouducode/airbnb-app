@@ -33,11 +33,10 @@ export default function SignInScreen({ setToken }) {
   };
 
   const handleSignIn = async () => {
-    const userToken = "secret-token";
-    setToken(userToken);
     setActivityIndicator(true);
     if (!email || !password) {
       setNeedToBeFilled(true);
+      setActivityIndicator(false);
     } else {
       try {
         setNeedToBeFilled(false);
@@ -48,9 +47,10 @@ export default function SignInScreen({ setToken }) {
             password: password,
           }
         );
+        setToken(response.data.token);
         setActivityIndicator(false);
         alert("Logged in");
-        console.log(response.data);
+        // console.log("response.data=>", response.data.token);
       } catch (error) {
         setActivityIndicator(false);
         alert("Invalid credentials");

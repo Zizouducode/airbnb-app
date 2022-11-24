@@ -48,8 +48,6 @@ export default function SignInScreen({ setToken }) {
   };
 
   const handleSignUp = async () => {
-    const userToken = "secret-token";
-    setToken(userToken);
     setActivityIndicator(true);
     if (
       !email ||
@@ -58,6 +56,7 @@ export default function SignInScreen({ setToken }) {
       !password ||
       !passwordConfirmation
     ) {
+      setActivityIndicator(false);
       setNeedToBeFilled(true);
     } else {
       try {
@@ -72,7 +71,8 @@ export default function SignInScreen({ setToken }) {
               password: password,
             }
           );
-          console.log(response.data);
+          setToken(response.data.token);
+          // console.log(response.data);
           setActivityIndicator(false);
           alert("You are registered");
         }
